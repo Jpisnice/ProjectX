@@ -2,11 +2,21 @@
 import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
+  Icon360,
+  IconAd,
+  IconAdjustmentsCog,
+  IconAdjustmentsShare,
   IconArrowLeft,
   IconBrandTabler,
+  IconH1,
   IconHome,
+  IconMapPlus,
+  IconMoneybag,
+  IconPhotoPlus,
+  IconPlaceholder,
   IconPlus,
   IconSettings,
+  IconShare,
   IconUser,
   IconUserBolt,
 } from "@tabler/icons-react";
@@ -28,29 +38,23 @@ export function UserSidebar() {
       label: "Post",
       href: "#",
       icon: (
-        <IconPlus className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconPhotoPlus className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Settings",
+      label: "My Ward",
       href: "#",
       icon: (
-        <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconMoneybag className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "Logout",
-      href: "#",
-      icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
+  
   ];
   const [open, setOpen] = useState(true);
   return (
     <div
       className={cn(
-        "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 max-w-7xl mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
+        "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 max-w-full mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
         "h-screen"
       )}
     >
@@ -58,7 +62,7 @@ export function UserSidebar() {
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <Logo />
-            <div className="mt-8 flex flex-col gap-2">
+            <div className="mt-9 flex flex-col gap-2">
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
