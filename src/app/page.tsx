@@ -1,9 +1,12 @@
 import Image from "next/image";
 
-export default function Home() {
+import { UserSidebar } from '@/components/userSidebar'
+
+export default function Home(){
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-     Hello
-    </main>
-  );
+    <div>
+      <UserSidebar/>
+    </div>
+  )
 }
+
