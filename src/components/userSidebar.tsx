@@ -4,7 +4,10 @@ import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import {
   IconArrowLeft,
   IconBrandTabler,
+  IconHome,
+  IconMoneybag,
   IconSettings,
+  IconUser,
   IconUserBolt,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -17,33 +20,28 @@ export function UserSidebar() {
 
   const links = [
     {
-      label: "Dashboard",
+      label: "Home",
       href: "/user/dashboard",
       icon: (
-        <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconHome className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+
       ),
     },
     {
       label: "Profile",
       href: "/user/profile",
       icon: (
-        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconUser className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Settings",
-      href: "/user/settings",
+      label: "MyWard",
+      href: "/user/myward",
       icon: (
-        <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconMoneybag className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "Logout",
-      href: "#",
-      icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
+ 
   ];
 
   return (
