@@ -1,12 +1,18 @@
-import React from 'react'
-import { AdminSidebar } from '@/components/adminSidebar'
+"use client";
+import React, { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 const AdminDash = () => {
-  return (
-    <div>
-      <AdminSidebar/>
-    </div>
-  )
-}
+  const router = useRouter();
+  const pathname = usePathname();
 
-export default AdminDash
+  useEffect(() => {
+    if (pathname === "/admin") {
+      router.push("/admin/dashboard");
+    }
+  }, [pathname, router]);
+
+  return null;
+};
+
+export default AdminDash;
