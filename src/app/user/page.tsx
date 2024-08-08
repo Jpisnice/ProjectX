@@ -2,17 +2,17 @@
 import React, { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
-const AdminDash = () => {
+const UserDash = () => {
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname === "/admin") {
-      router.push("/admin/dashboard");
+    if (pathname === "/user") {
+      router.push("/user/dashboard");
     }
   }, [pathname, router]);
 
   return null;
 };
 
-export default AdminDash;
+export default UserDash;

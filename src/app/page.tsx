@@ -1,12 +1,8 @@
 import Image from "next/image";
+import {UserSidebar} from "@/components/userSidebar"
 
-import { UserSidebar } from '@/components/userSidebar'
-
-export default function Home(){
+export default function Home() {
   return (
-    <div>
-      <UserSidebar/>
-    </div>
-  )
+    <UserSidebar/>
+  );
 }
-
