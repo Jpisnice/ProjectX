@@ -1,8 +1,18 @@
-import Image from "next/image";
-import {UserSidebar} from "@/components/userSidebar"
+"use client";
+import React, { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
-export default function Home() {
-  return (
-    <UserSidebar/>
-  );
-}
+const UserDash = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === "/") {
+      router.push("/user/dashboard");
+    }
+  }, [pathname, router]);
+
+  return null;
+};
+
+export default UserDash;
