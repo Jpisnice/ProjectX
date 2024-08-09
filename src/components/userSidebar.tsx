@@ -2,13 +2,10 @@
 import React, { useState } from "react";
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import {
-  IconArrowLeft,
-  IconBrandTabler,
   IconHome,
   IconMoneybag,
-  IconSettings,
+  IconPlus,
   IconUser,
-  IconUserBolt,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -21,9 +18,17 @@ export function UserSidebar() {
   const links = [
     {
       label: "Home",
-      href: "/user/dashboard",
+      href: "/user/home",
       icon: (
         <IconHome className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+
+      ),
+    },
+    {
+      label: "Create",
+      href: "/user/create",
+      icon: (
+        <IconPlus className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 
       ),
     },
@@ -35,7 +40,7 @@ export function UserSidebar() {
       ),
     },
     {
-      label: "MyWard",
+      label: "My Ward",
       href: "/user/myward",
       icon: (
         <IconMoneybag className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />

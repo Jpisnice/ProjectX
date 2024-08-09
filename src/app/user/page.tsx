@@ -8,7 +8,7 @@ const UserDash = () => {
 
   useEffect(() => {
     if (pathname === "/user") {
-      router.push("/user/dashboard");
+      router.push("/user/home");
     }
   }, [pathname, router]);
 
