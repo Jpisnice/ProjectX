@@ -1,69 +1,66 @@
 "use client";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
-import { Bar, BarChart } from "recharts";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+type ChartProps = {
+  chartData: Array<{ [key: string]: any }>;
+  chartConfig: ChartConfig;
+  dataKeys: { key1: string }; // Only key1 is needed for area chart
+  chartType: "area";
+  fillColors?: {
+    key1Fill?: string;
+    fillOpacity?: number;
+    strokeColor?: string;
+  };
+};
 
-// Chart component definition
 export function Chart({
   chartData,
   chartConfig,
   dataKeys,
-}: {
-  chartData: Array<{ week: string; [key: number]: number }>;
-  chartConfig: ChartConfig;
-  dataKeys: { key1: string; key2: string };
-}) {
+  chartType,
+  fillColors = {}, // Default values for fill parameters
+}: ChartProps) {
+  const {
+    key1Fill = "var(--color-desktop)",
+    fillOpacity = 0.4,
+    strokeColor = "var(--color-desktop)",
+  } = fillColors;
+
+  if (chartType !== "area") {
+    return null; // Return null if the chart type is not "area"
+  }
+
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-      <BarChart accessibilityLayer data={chartData}>
-        <Bar
-          dataKey={dataKeys.key1}
-          fill="var(--color-desktop)"
-          radius={4}
+    <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+      <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
+        <CartesianGrid vertical={true} />
+        <XAxis
+          dataKey="week" // Set to "week" for x-axis data
+          tickLine={false}
+          axisLine={true}
+          tickMargin={8}
+          tickFormatter={(value) => value.slice(0, 5)} // Format week data
         />
-        <Bar dataKey={dataKeys.key2} fill="var(--color-mobile)" radius={4} />
-      </BarChart>
+        <ChartTooltip
+          cursor={true}
+          content={<ChartTooltipContent indicator="dot" hideLabel />}
+        />
+        <Area
+          dataKey={dataKeys.key1}
+          type="linear"
+          fill={key1Fill}
+          fillOpacity={fillOpacity}
+          stroke={strokeColor}
+        />
+      </AreaChart>
     </ChartContainer>
   );
 }
-//Example usage inside a component:
-// import React from "react";
-// import { Chart } from "@/components/Chart";
 
-// const chartData = [
-//   { week: "1/7", desktop: 186, mobile: 80 },
-//   { week: "7/7", desktop: 305, mobile: 200 },
-//   { week: "14/7", desktop: 237, mobile: 120 },
-//   { week: "21/7", desktop: 73, mobile: 190 },
-//   { week: "28/7", desktop: 209, mobile: 130 },
-//   { week: "35/7", desktop: 214, mobile: 140 },
-// ];
-
-// const chartConfig = {
-//   desktop: {
-//     label: "Desktop",
-//     color: "#2563eb",
-//   },
-//   mobile: {
-//     label: "Mobile",
-//     color: "#60a5fa",
-//   },
-// };
-
-// const dataKeys = {
-//   desktop: "desktop",
-//   mobile: "mobile",
-// };
-
-// export default function Dashboard() {
-//   return (
-//     <div>
-//       <h1>Dashboard</h1>
-//       <Chart
-//         chartData={chartData}
-//         chartConfig={chartConfig}
-//         dataKeys={dataKeys}
-//       />
-//     </div>
-//   );
-// }
+export type { ChartConfig };

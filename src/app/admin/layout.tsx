@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { AdminSidebar } from "@/components/adminSidebar";
-import { AdminSidebarMobile } from "@/components/adminSidebarMobile";
+import { AdminSidebar } from "@/components/admin-components/adminSidebar";
+import { AdminSidebarMobile } from "@/components/admin-components/adminSidebarMobile";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [isDesktop, setIsDesktop] = useState(false);
