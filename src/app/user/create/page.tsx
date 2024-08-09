@@ -1,116 +1,174 @@
 "use client";
 
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"; // Import ScrollArea and ScrollBar
 
 const UploadPage: React.FC = () => {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [previewURLs, setPreviewURLs] = useState<string[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewURL, setPreviewURL] = useState<string | null>(null);
   const [caption, setCaption] = useState<string>("");
+  const [wardName, setWardName] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [issueTitle, setIssueTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const filesArray = Array.from(files);
-      const previewURLsArray = filesArray.map((file) =>
-        URL.createObjectURL(file)
-      );
-      setSelectedFiles(filesArray);
-      setPreviewURLs(previewURLsArray);
+    const file = event.target.files?.[0];
+    if (file) {
+      const previewURL = URL.createObjectURL(file);
+      setSelectedFile(file);
+      setPreviewURL(previewURL);
     }
   };
 
   const handleUpload = () => {
-    if (selectedFiles.length > 0) {
-      console.log("Uploading files:", selectedFiles.map(file => file.name));
+    if (selectedFile) {
+      console.log("Uploading file:", selectedFile.name);
       console.log("Caption:", caption);
-      // Upload logic here, including files and caption
+      console.log("Ward Name:", wardName);
+      console.log("Location in Ward:", location);
+      console.log("Issue Title:", issueTitle);
+      console.log("Description of Issue:", description);
+      // Upload logic here, including file and other form data
     }
   };
 
   const handleRemove = () => {
-    setSelectedFiles([]);
-    setPreviewURLs([]);
+    setSelectedFile(null);
+    setPreviewURL(null);
     setCaption("");
+    setWardName("");
+    setLocation("");
+    setIssueTitle("");
+    setDescription("");
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h1 className="text-center text-2xl font-bold mb-6">Create a New Post</h1>
-        
-        <div className="flex flex-col items-center">
-          {!selectedFiles.length ? (
-            <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <svg
-                  aria-hidden="true"
-                  className="w-10 h-10 mb-3 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M7 16V6a4 4 0 014-4h2a4 4 0 014 4v10m5 4H3m14-4v4m-4-4v4"
-                  ></path>
-                </svg>
-                <p className="mb-2 text-sm text-gray-500">
-                  <span className="font-semibold">Click to upload</span> or drag and drop
-                </p>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF, MP4 up to 10MB</p>
-              </div>
-              <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleFileChange} />
-            </label>
-          ) : (
-            <>
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                {previewURLs.map((url, index) => (
-                  <div key={index} className="relative w-full h-24">
-                    <img
-                      src={url}
-                      alt={`Preview ${index}`}
-                      className="object-cover w-full h-full rounded-lg"
-                    />
+    <ScrollArea className="w-full h-screen"> {/* Add ScrollArea here */}
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <Card className={`w-full max-w-2xl shadow-lg ${previewURL ? 'aspect-auto' : 'h-auto'}`}>
+          <CardHeader>
+            <CardTitle className="text-center text-2xl font-bold">Create a New Post</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center">
+              {!selectedFile ? (
+                <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 hover:border-blue-500 transition duration-200 ease-in-out">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg
+                      aria-hidden="true"
+                      className="w-10 h-10 mb-3 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M7 16V6a4 4 0 014-4h2a4 4 0 014 4v10m5 4H3m14-4v4m-4-4v4"
+                      ></path>
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500">
+                      <span className="font-semibold">Click to upload</span> or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                   </div>
-                ))}
-              </div>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              ) : (
+                <>
+                  <div className="w-full mb-4">
+                    {previewURL && (
+                      <img
+                        src={previewURL}
+                        alt="Preview"
+                        className="object-cover w-full h-full rounded-lg"
+                        style={{ aspectRatio: '1 / 1' }}
+                      />
+                    )}
+                  </div>
 
-              <textarea
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="Write a caption..."
-                className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={3}
-              />
-            </>
-          )}
+                  <Textarea
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    placeholder="Write a caption..."
+                    className="w-full mb-4"
+                    rows={2}
+                  />
 
-          <button
-            onClick={handleUpload}
-            disabled={!selectedFiles.length}
-            className={`mt-4 w-full py-2 text-white font-semibold rounded-lg ${
-              selectedFiles.length
-                ? "bg-blue-500 hover:bg-blue-600"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            {selectedFiles.length ? "Upload" : "Select files to upload"}
-          </button>
+                  <Select onValueChange={(value) => setWardName(value)}>
+                    <SelectTrigger className="w-full mb-4">
+                      <SelectValue placeholder="Select Ward" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Ward 1">Ward 1</SelectItem>
+                      <SelectItem value="Ward 2">Ward 2</SelectItem>
+                      <SelectItem value="Ward 3">Ward 3</SelectItem>
+                      {/* Add more wards as needed */}
+                    </SelectContent>
+                  </Select>
 
-          {selectedFiles.length > 0 && (
-            <button
-              onClick={handleRemove}
-              className="mt-2 w-full py-2 text-gray-600 font-semibold rounded-lg bg-gray-200 hover:bg-gray-300"
-            >
-              Remove All
-            </button>
-          )}
-        </div>
+                  <Input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Location in Ward"
+                    className="w-full mb-4"
+                  />
+
+                  <Input
+                    type="text"
+                    value={issueTitle}
+                    onChange={(e) => setIssueTitle(e.target.value)}
+                    placeholder="Issue Title"
+                    className="w-full mb-4"
+                  />
+
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Description of Issue"
+                    className="w-full mb-4"
+                    rows={3}
+                  />
+                </>
+              )}
+
+              {selectedFile && (
+                <>
+                  <Button
+                    onClick={handleUpload}
+                    className="w-full bg-blue-500 text-white hover:bg-blue-600"
+                  >
+                    Upload
+                  </Button>
+
+                  <Button
+                    onClick={handleRemove}
+                    className="mt-2 w-full bg-gray-200 text-gray-600 hover:bg-gray-300"
+                  >
+                    Remove
+                  </Button>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+      <ScrollBar orientation="vertical" /> {/* Add ScrollBar for vertical scrolling */}
+    </ScrollArea>
   );
 };
 
