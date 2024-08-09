@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../lib/sequelize";
+import Ward from "./ward"; // Import the Ward model
 
 interface UserAttributes {
   id: number;
@@ -9,6 +10,7 @@ interface UserAttributes {
   address?: string;
   profile_picture?: string;
   role: "User";
+  ward_id?: number; // New field
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -26,6 +28,7 @@ class User
   public address?: string;
   public profile_picture?: string;
   public role!: "User";
+  public ward_id?: number; // New field
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -61,11 +64,22 @@ User.init(
       type: DataTypes.ENUM("User"),
       defaultValue: "User",
     },
+    ward_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Ward, // Foreign key reference to Ward
+        key: "id",
+      },
+      allowNull: true,
+    },
   },
   {
     sequelize,
     tableName: "users",
   }
 );
+
+// Associations
+User.belongsTo(Ward, { foreignKey: "ward_id", as: "ward" }); // Define association with Ward
 
 export default User;

@@ -7,8 +7,10 @@ CREATE TABLE users (
     address TEXT,
     profile_picture VARCHAR(255),
     role ENUM('User') NOT NULL DEFAULT 'User',
+    ward_id INT, -- New column to associate the user with a ward
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (ward_id) REFERENCES wards(id) -- Foreign key reference to wards table
 );
 
 -- Create the Admins table
@@ -21,7 +23,8 @@ CREATE TABLE admins (
     mla_id INT NULL, -- Only applicable for Sarpanch, references MLA
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (ward_id) REFERENCES wards(id) -- Ensure the admin's ward is valid
 );
 
 -- Create the Wards table
@@ -31,6 +34,8 @@ CREATE TABLE wards (
     description TEXT,
     address TEXT, -- Field for ward address
     admin_id INT NOT NULL, -- References the Sarpanch or MLA
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (admin_id) REFERENCES admins(id)
 );
 
@@ -81,23 +86,22 @@ CREATE TABLE likes (
 );
 
 -- Insert dummy data into the Users table
-INSERT INTO users (username, password_hash, email, address, profile_picture, role)
+INSERT INTO users (username, password_hash, email, address, profile_picture, role, ward_id)
 VALUES 
-('admin1', 'hashed_password1', 'admin1@example.com', '123 Main St', 'profile1.jpg', 'User'),
-('admin2', 'hashed_password2', 'admin2@example.com', '456 Elm St', 'profile2.jpg', 'User'),
-('admin3', 'hashed_password3', 'admin3@example.com', '789 Oak St', 'profile3.jpg', 'User'),
-('user1', 'hashed_password4', 'user1@example.com', '321 Maple St', 'user1.jpg', 'User'),
-('user2', 'hashed_password5', 'user2@example.com', '654 Birch St', 'user2.jpg', 'User');
+('admin1', 'hashed_password1', 'admin1@example.com', '123 Main St', 'profile1.jpg', 'User', 1),
+('admin2', 'hashed_password2', 'admin2@example.com', '456 Elm St', 'profile2.jpg', 'User', 2),
+('admin3', 'hashed_password3', 'admin3@example.com', '789 Oak St', 'profile3.jpg', 'User', 1),
+('user1', 'hashed_password4', 'user1@example.com', '321 Maple St', 'user1.jpg', 'User', 2),
+('user2', 'hashed_password5', 'user2@example.com', '654 Birch St', 'user2.jpg', 'User', 1);
 
 -- Insert dummy data into the Admins table
-INSERT INTO admins (user_id, role)
+INSERT INTO admins (user_id, role, ward_id)
 VALUES 
-((SELECT id FROM users WHERE username = 'admin1'), 'Panch'),
-((SELECT id FROM users WHERE username = 'admin2'), 'Sarpanch'),
-((SELECT id FROM users WHERE username = 'admin3'), 'MLA');
+((SELECT id FROM users WHERE username = 'admin1'), 'Panch', 1),
+((SELECT id FROM users WHERE username = 'admin2'), 'Sarpanch', 2),
+((SELECT id FROM users WHERE username = 'admin3'), 'MLA', NULL);
 
--- Optionally insert data into Wards, Issues, and Posts tables
--- This is just to show sample structure, adjust as needed
+-- Insert dummy data into Wards, Issues, and Posts tables
 INSERT INTO wards (name, description, address, admin_id)
 VALUES 
 ('Ward 1', 'Description for Ward 1', 'Address for Ward 1', (SELECT id FROM admins WHERE role = 'Panch')),
@@ -117,7 +121,7 @@ VALUES
 INSERT INTO comments (post_id, user_id, content)
 VALUES 
 ((SELECT id FROM posts WHERE issue_id = (SELECT id FROM issues WHERE title = 'Issue 1')), (SELECT id FROM users WHERE username = 'user1'), 'Comment on Issue 1 by User 1'),
-((SELECT id FROM posts WHERE issue_id = (SELECT id FROM issues WHERE title = 'Issue 2')), (SELECT id FROM users WHERE username = 'user2'), 'Comment on Issue 2 by User 2');
+((SELECT id FROM posts WHERE issue_id = (SELECT id FROM issues where title = 'Issue 2')), (SELECT id FROM users WHERE username = 'user2'), 'Comment on Issue 2 by User 2');
 
 -- Insert dummy data into the Likes table
 INSERT INTO likes (post_id, user_id)

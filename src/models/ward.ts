@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../lib/sequelize';
 import Admin from './admin';
+import User from './user'; // Import the User model
 
 interface WardAttributes {
     id: number;
@@ -52,7 +53,12 @@ Ward.init({
     tableName: 'wards'
 });
 
+// Associations
 Ward.belongsTo(Admin, { foreignKey: 'admin_id' });
 Admin.hasMany(Ward, { foreignKey: 'admin_id' });
+
+// New associations with User and Admin
+Ward.hasMany(User, { foreignKey: 'ward_id', as: 'users' }); // Users associated with Ward
+Ward.hasMany(Admin, { foreignKey: 'ward_id', as: 'admins' }); // Admins associated with Ward
 
 export default Ward;

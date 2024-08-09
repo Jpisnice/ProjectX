@@ -1,12 +1,13 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../lib/sequelize';
 import User from './user';
+import Ward from './ward'; // Import the Ward model
 
 interface AdminAttributes {
     id: number;
     user_id: number;
     role: 'Panch' | 'Sarpanch' | 'MLA';
-    ward_id?: number;
+    ward_id?: number; // New field
     sarpanch_id?: number;
     mla_id?: number;
     createdAt?: Date;
@@ -19,7 +20,7 @@ class Admin extends Model<AdminAttributes, AdminCreationAttributes> implements A
     public id!: number;
     public user_id!: number;
     public role!: 'Panch' | 'Sarpanch' | 'MLA';
-    public ward_id?: number;
+    public ward_id?: number; // New field
     public sarpanch_id?: number;
     public mla_id?: number;
     public readonly createdAt!: Date;
@@ -45,6 +46,10 @@ Admin.init({
     },
     ward_id: {
         type: DataTypes.INTEGER,
+        references: {
+            model: Ward, // Foreign key reference to Ward
+            key: 'id'
+        },
         allowNull: true
     },
     sarpanch_id: {
@@ -62,5 +67,9 @@ Admin.init({
 
 Admin.belongsTo(User, { foreignKey: 'user_id' });
 User.hasOne(Admin, { foreignKey: 'user_id' });
+
+// Associations
+Admin.belongsTo(Ward, { foreignKey: 'ward_id', as: 'ward' }); // Define association with Ward
+Ward.hasMany(Admin, { foreignKey: 'ward_id', as: 'admins' }); // Define reverse association in Ward model
 
 export default Admin;
