@@ -1,6 +1,9 @@
-const { Sequelize } = require('sequelize');
+// src/lib/sequelize.ts
+import { Sequelize } from 'sequelize';
+import { config } from 'dotenv';
 
-// Create a new Sequelize instance
+config(); // Load environment variables
+
 const sequelize = new Sequelize(
   process.env.DATABASE_NAME!,
   process.env.DATABASE_USER!,
@@ -8,20 +11,8 @@ const sequelize = new Sequelize(
   {
     host: process.env.DATABASE_HOST,
     dialect: 'mysql',
-    logging: false,
+    logging: process.env.SEQUELIZE_LOGGING === 'true' // Optional: Use logging setting from .env
   }
 );
 
-// Test the database connection
-const testConnection = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Connection to the database has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
-  }
-};
-
-testConnection();
-
-module.exports = sequelize;
+export default sequelize;
