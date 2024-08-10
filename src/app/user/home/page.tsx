@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
     const examplePosts: Post[] = [
       {
         id: "1",
-        image: "/image1.jpg", // Local image path
+        image: "/next.svg", // Local image path
         caption: "This is the first post",
         wardName: "Ward A",
         locationInWard: "Location X",
@@ -84,14 +84,14 @@ const HomePage: React.FC = () => {
 
   return (
     <ScrollArea className="w-full h-screen">
-      <div className="min-h-screen bg-gray-100 p-4 flex flex-col items-center">
-        <div className="w-full max-w-5xl rounded-md  border-gray-300">
-          <div className="space-y-4 p-4">
+      <div className="min-h-screen bg-gray-50 p-6 flex flex-col items-center">
+        <div className="w-full max-w-5xl rounded-lg border-gray-300">
+          <div className="space-y-6">
             {posts.map((post) => (
               <div
                 key={post.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 flex"
-                style={{ maxWidth: "100%", marginBottom: "16px" }} // Ensure card doesn't exceed container width
+                className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 flex"
+                style={{ maxWidth: "100%", marginBottom: "20px" }} // Ensure card doesn't exceed container width
               >
                 <div className="relative w-1/3 h-96 flex-shrink-0">
                   <Image
@@ -99,37 +99,37 @@ const HomePage: React.FC = () => {
                     alt={`Post ${post.id} Image`}
                     layout="fill" // Ensure image scales correctly
                     objectFit="cover" // Ensure image covers its container
-                    className="w-full h-full object-cover" // Cover image
+                    className="w-full h-full object-cover rounded-l-lg" // Cover image with rounded corners
                   />
                 </div>
-                <div className="p-4 w-2/3 flex flex-col max-h-[calc(100vh-2rem)] overflow-y-auto">
-                  <p className="text-gray-800 font-bold text-xl">{post.issueTitle}</p>
-                  <p className="text-gray-600 text-base">{post.caption}</p>
-                  <p className="text-gray-600 text-base">{`Ward: ${post.wardName}`}</p>
-                  <p className="text-gray-600 text-base">{`Location: ${post.locationInWard}`}</p>
-                  <p className="text-gray-600 text-base">{`Description: ${post.descriptionOfIssue}`}</p>
-                  <p className="text-gray-500 text-sm">
+                <div className="p-6 w-2/3 flex flex-col max-h-[calc(100vh-2rem)] overflow-y-auto">
+                  <h2 className="text-gray-800 font-bold text-2xl mb-2">{post.issueTitle}</h2>
+                  <p className="text-gray-600 text-lg mb-1">{post.caption}</p>
+                  <p className="text-gray-500 text-base mb-1">{`Ward: ${post.wardName}`}</p>
+                  <p className="text-gray-500 text-base mb-1">{`Location: ${post.locationInWard}`}</p>
+                  <p className="text-gray-700 text-base mb-4">{post.descriptionOfIssue}</p>
+                  <p className="text-gray-400 text-sm mb-4">
                     {post.date} at {post.time}
                   </p>
-                  <div className="mt-4 flex items-center space-x-4">
+                  <div className="mt-auto flex items-center space-x-4">
                     <Button
                       onClick={() => handleLike(post.id)}
-                      className="bg-blue-500 text-white hover:bg-blue-600"
+                      className="bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-md"
                     >
                       Like ({post.likes})
                     </Button>
                     <Button
                       onClick={() => handleCommentInputToggle(post.id)}
-                      className="bg-gray-800 text-white hover:bg-gray-600"
+                      className="bg-gray-800 text-white hover:bg-gray-600 px-4 py-2 rounded-md"
                     >
                       {showCommentInput === post.id
                         ? "Hide Comment Box"
                         : "Add Comment"}
                     </Button>
                   </div>
-                  <div className="mt-4 flex flex-col">
+                  <div className="mt-6">
                     {post.comments.length > 0 && (
-                      <div className="flex flex-col space-y-2">
+                      <div className="flex flex-col space-y-3">
                         {post.comments.slice(0, 2).map((comment, index) => (
                           <p key={index} className="text-gray-600 text-base">
                             {comment}
@@ -138,7 +138,7 @@ const HomePage: React.FC = () => {
                         {post.comments.length > 2 && !showAllComments[post.id] && (
                           <p
                             onClick={() => toggleShowAllComments(post.id)}
-                            className="text-blue-500 cursor-pointer hover:underline mt-2"
+                            className="text-blue-500 cursor-pointer hover:underline"
                           >
                             Show More Comments
                           </p>
@@ -157,12 +157,12 @@ const HomePage: React.FC = () => {
                         type="text"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        className="border border-gray-300 p-2 rounded-md flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 p-3 rounded-lg flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Add a comment..."
                       />
                       <Button
                         onClick={() => handleAddComment(post.id)}
-                        className="ml-2 bg-gray-800 text-white hover:bg-gray-600"
+                        className="ml-3 bg-gray-800 text-white hover:bg-gray-600 px-4 py-2 rounded-md"
                       >
                         Add
                       </Button>
