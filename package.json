@@ -1,4 +1,5 @@
 {
+  "$schema": "./package.schema.json",
   "name": "projectx",
   "version": "0.1.0",
   "private": true,
