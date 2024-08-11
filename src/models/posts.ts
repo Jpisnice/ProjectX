@@ -7,6 +7,7 @@ interface PostAttributes {
     content: string;
     image?: string;
     issue_id: number;
+    resolve_count: number; // New field for resolve_count
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -18,6 +19,7 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
     public content!: string;
     public image?: string;
     public issue_id!: number;
+    public resolve_count!: number; // New field for resolve_count
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -40,6 +42,15 @@ Post.init({
         references: {
             model: Issue,
             key: 'id'
+        }
+    },
+    resolve_count: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+        validate: {
+            min: 0,
+            max: 5
         }
     }
 }, {
