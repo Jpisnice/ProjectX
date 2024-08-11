@@ -1,12 +1,11 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../lib/sequelize';
-import Ward from './ward';
+import Ward from './ward'; // Import the Ward model
 
 interface IssueAttributes {
     id: number;
     title: string;
     description?: string;
-    location?: string;
     resolved: boolean;
     ward_id: number;
     createdAt?: Date;
@@ -19,7 +18,6 @@ class Issue extends Model<IssueAttributes, IssueCreationAttributes> implements I
     public id!: number;
     public title!: string;
     public description?: string;
-    public location?: string;
     public resolved!: boolean;
     public ward_id!: number;
     public readonly createdAt!: Date;
@@ -39,9 +37,6 @@ Issue.init({
     description: {
         type: DataTypes.TEXT
     },
-    location: {
-        type: DataTypes.STRING
-    },
     resolved: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
@@ -58,6 +53,7 @@ Issue.init({
     tableName: 'issues'
 });
 
+// Define associations
 Issue.belongsTo(Ward, { foreignKey: 'ward_id' });
 Ward.hasMany(Issue, { foreignKey: 'ward_id' });
 
