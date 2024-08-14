@@ -1,6 +1,12 @@
 "use client";
 import React from "react";
 import IssueCard from "@/components/admin-components/IssueCard";
+import { useRouter } from "next/router";
+
+const UserPage = () => {
+  const router = useRouter();
+  const { admin_id } = router.query; // Access the `id` from the route
+}
 
 const ProfilePage = () => {
   const issues = [
