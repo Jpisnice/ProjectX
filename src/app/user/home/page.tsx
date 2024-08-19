@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
 
   const handleAddLike = async (postId: number) => {
     try {
-      await fetch('/api/users/home', {
+      const res = await fetch('/api/users/home', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,14 @@ const HomePage: React.FC = () => {
           user_id: 1, // Replace with actual user_id
         }),
       });
-      setPosts(posts.map(post => post.id === postId ? { ...post, like_count: post.like_count + 1 } : post));
+
+      if (res.status === 400) {
+        const errorData = await res.json();
+        console.error(errorData.error);
+      } else {
+        const { like_count } = await res.json();
+        setPosts(posts.map(post => post.id === postId ? { ...post, like_count: like_count } : post));
+      }
     } catch (error) {
       console.error('Error adding like:', error);
     }

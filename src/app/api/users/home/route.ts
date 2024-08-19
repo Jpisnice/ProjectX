@@ -4,7 +4,7 @@ import { doQuery } from "@/lib/db";
 export async function GET() {
     try {
         const query = `
-            SELECT p.*, COUNT(l.id) as like_count,
+            SELECT p.*, COUNT(DISTINCT l.id) as like_count,
                    json_agg(json_build_object(
                        'id', c.id,
                        'content', c.content,
@@ -47,14 +47,31 @@ export async function PATCH(request: Request) {
     try {
         const { post_id, user_id } = await request.json();
 
+        // Check if the user has already liked the post
+        const checkLikeQuery = `
+            SELECT * FROM likes WHERE post_id = $1 AND user_id = $2
+        `;
+        const existingLike = await doQuery(checkLikeQuery, [post_id, user_id]);
+
+        if (existingLike.length > 0) {
+            return NextResponse.json({ error: "User has already liked this post." }, { status: 400 });
+        }
+
         const insertLikeQuery = `
             INSERT INTO likes (post_id, user_id)
             VALUES ($1, $2)
             RETURNING *
         `;
-        const like = await doQuery(insertLikeQuery, [post_id, user_id]);
+        await doQuery(insertLikeQuery, [post_id, user_id]);
 
-        return NextResponse.json(like[0]);
+        // Get updated like count
+        const likeCountQuery = `
+            SELECT COUNT(*) as like_count FROM likes WHERE post_id = $1
+        `;
+        const likeCountResult = await doQuery(likeCountQuery, [post_id]);
+        const likeCount = likeCountResult[0].like_count;
+
+        return NextResponse.json({ like_count: likeCount });
     } catch (error) {
         console.error('Error adding like:', error);
         return NextResponse.error();
