@@ -1,144 +1,67 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import IssueCard from "@/components/admin-components/IssueCard";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 
-const UserPage = () => {
-  const router = useRouter();
-  const { admin_id } = router.query; // Access the `id` from the route
+interface Issue {
+  id: number;
+  title: string;
+  description: string;
+  ward: string;
+  location: string;
+  isResolved: boolean;
 }
 
 const ProfilePage = () => {
-  const issues = [
-    {
-      id: 1,
-      title: "Issue 1",
-      description: "This is the first issue",
-      ward: "Ward 1",
-      location: "Location 1",
-      isResolved: true,
-    },
-    {
-      id: 2,
-      title: "Issue 2",
-      description: "This is the second issue",
-      ward: "Ward 2",
-      location: "Location 2",
-      isResolved: false,
-    },
-    {
-      id: 3,
-      title: "Issue 1",
-      description: "This is the first issue",
-      ward: "Ward 1",
-      location: "Location 1",
-      isResolved: true,
-    },
-    {
-      id: 86,
-      title: "Issue 2",
-      description: "This is the second issue",
-      ward: "Ward 2",
-      location: "Location 2",
-      isResolved: false,
-    },
-    {
-      id: 88,
-      title: "Issue 1",
-      description: "This is the first issue",
-      ward: "Ward 1",
-      location: "Location 1",
-      isResolved: true,
-    },
-    {
-      id: 34,
-      title: "Issue 2",
-      description: "This is the second issue",
-      ward: "Ward 2",
-      location: "Location 2",
-      isResolved: false,
-    },
-    {
-      id: 33,
-      title: "Issue 1",
-      description: "This is the first issue",
-      ward: "Ward 1",
-      location: "Location 1",
-      isResolved: true,
-    },
-    {
-      id: 16,
-      title: "Issue 2",
-      description: "This is the second issue",
-      ward: "Ward 2",
-      location: "Location 2",
-      isResolved: false,
-    },
-    {
-      id: 58,
-      title: "Issue 1",
-      description: "This is the first issue",
-      ward: "Ward 1",
-      location: "Location 1",
-      isResolved: true,
-    },
-    {
-      id: 54,
-      title: "Issue 2",
-      description: "This is the second issue",
-      ward: "Ward 2",
-      location: "Location 2",
-      isResolved: false,
-    },
-    {
-      id: 53,
-      title: "Issue 1",
-      description: "This is the first issue",
-      ward: "Ward 1",
-      location: "Location 1",
-      isResolved: true,
-    },
-    {
-      id: 26,
-      title: "Issue 2",
-      description: "This is the second issue",
-      ward: "Ward 2",
-      location: "Location 2",
-      isResolved: false,
-    },
-    {
-      id: 28,
-      title: "Issue 1",
-      description: "This is the first issue",
-      ward: "Ward 1",
-      location: "Location 1",
-      isResolved: true,
-    },
-    {
-      id: 22,
-      title: "Issue 2",
-      description: "This is the second issue",
-      ward: "Ward 2",
-      location: "Location 2",
-      isResolved: false,
-    },
-    // Add more issues as needed
-  ];
+   const params = useParams();
+   const admin_id = params?.admin_id as string | undefined; // Get the dynamic route parameter
+
+  const [issues, setIssues] = useState<Issue[]>([]); // Specify the type of the issues array
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (admin_id) {
+      const fetchIssues = async () => {
+        try {
+          const response = await fetch(`/api/admin/issues/${admin_id}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch issues");
+          }
+          const data = await response.json();
+          setIssues(data.issues); // TypeScript now knows the structure of data.issues
+        } catch (err:any) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchIssues();
+    } else {
+      setLoading(false);
+      setError("No admin_id provided");
+    }
+  }, [admin_id]);
 
   const handleClick = (issue_id: number) => {
     console.log(`Issue with ID ${issue_id} clicked`);
     // Handle the click event for the specific issue here
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="w-full h-full">
       <div className="font-bold text-2xl mb-4">Issues</div>
       <h1 className="mb-4">Here are the issues</h1>
-      <div
-        className="flex flex-wrap overflow-y-auto mt-4 w-fit justify-center max-h-[calc(100vh-10rem)]"
-        // This sets the max-height of the container to be less than the viewport height,
-        // allowing for vertical scrolling
-      >
+      <div className="flex flex-wrap overflow-y-auto mt-4 w-fit justify-center max-h-[calc(100vh-10rem)]">
         {issues.map((issue) => (
           <div
             key={issue.id}
