@@ -1,179 +1,139 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { Textarea } from "@/components/ui/textarea";
+
+interface Comment {
+    id: number;
+    content: string;
+    created_at: string;
+    user_id: number;
+}
 
 interface Post {
-  id: string;
-  image: string;
-  caption: string;
-  wardName: string;
-  locationInWard: string;
-  issueTitle: string;
-  descriptionOfIssue: string;
-  likes: number;
-  comments: string[];
-  date: string;
-  time: string;
+    id: number;
+    content: string;
+    issue_id: number;
+    user_id: number;
+    image: string;
+    resolve_count: number;
+    created_at: string;
+    updated_at: string;
+    comments: Comment[];
+    like_count: number;
 }
 
 const HomePage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newComment, setNewComment] = useState<string>("");
-  const [showCommentInput, setShowCommentInput] = useState<string | null>(null);
-  const [showAllComments, setShowAllComments] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
-    const examplePosts: Post[] = [
-      {
-        id: "1",
-        image: "/next.svg", // Local image path
-        caption: "This is the first post",
-        wardName: "Ward A",
-        locationInWard: "Location X",
-        issueTitle: "Issue 1",
-        descriptionOfIssue: "This is the description of issue 1.",
-        likes: 10,
-        comments: [
-          "Great post!",
-          "Love it!",
-          "This is amazing!",
-          "Really informative!"
-        ],
-        date: "2024-08-09",
-        time: "12:30 PM",
-      },
-      // Add more dummy posts as needed
-    ];
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch('/api/users/home');
+        const data = await res.json();
+        setPosts(data);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
 
-    setPosts(examplePosts);
+    fetchPosts();
   }, []);
 
-  const handleLike = (postId: string) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId ? { ...post, likes: post.likes + 1 } : post
-      )
-    );
+  const handleAddComment = async (postId: number) => {
+    try {
+      const res = await fetch('/api/users/home', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          post_id: postId,
+          user_id: 1, // Replace with actual user_id
+          content: newComment,
+        }),
+      });
+      const addedComment = await res.json();
+      setPosts(posts.map(post => post.id === postId ? { ...post, comments: [...post.comments, addedComment] } : post));
+      setNewComment("");
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
   };
 
-  const handleAddComment = (postId: string) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? { ...post, comments: [...post.comments, newComment] }
-          : post
-      )
-    );
-    setNewComment(""); // Clear input after adding comment
-    setShowCommentInput(null); // Hide input after adding comment
-  };
+  const handleAddLike = async (postId: number) => {
+    try {
+      const res = await fetch('/api/users/home', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          post_id: postId,
+          user_id: 1, // Replace with actual user_id
+        }),
+      });
 
-  const handleCommentInputToggle = (postId: string) => {
-    setShowCommentInput((prev) => (prev === postId ? null : postId));
-  };
-
-  const toggleShowAllComments = (postId: string) => {
-    setShowAllComments((prev) => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
+      if (res.status === 400) {
+        const errorData = await res.json();
+        console.error(errorData.error);
+      } else {
+        const { like_count } = await res.json();
+        setPosts(posts.map(post => post.id === postId ? { ...post, like_count: like_count } : post));
+      }
+    } catch (error) {
+      console.error('Error adding like:', error);
+    }
   };
 
   return (
     <ScrollArea className="w-full h-screen">
-      <div className="min-h-screen bg-gray-50 p-6 flex flex-col items-center">
-        <div className="w-full max-w-5xl rounded-lg border-gray-300">
-          <div className="space-y-6">
-            {posts.map((post) => (
-              <div
-                key={post.id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 flex"
-                style={{ maxWidth: "100%", marginBottom: "20px" }} // Ensure card doesn't exceed container width
-              >
-                <div className="relative w-1/3 h-96 flex-shrink-0">
-                  <Image
-                    src={post.image} // Local image path
-                    alt={`Post ${post.id} Image`}
-                    layout="fill" // Ensure image scales correctly
-                    objectFit="cover" // Ensure image covers its container
-                    className="w-full h-full object-cover rounded-l-lg" // Cover image with rounded corners
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        {posts.map((post) => (
+          <Card key={post.id} className="w-full max-w-2xl mb-4 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl font-bold">Issue #{post.issue_id}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                {post.image && (
+                  <img
+                    src={`data:image/jpeg;base64,${post.image}`}
+                    alt="Post image"
+                    className="object-cover w-full h-auto rounded-lg"
                   />
-                </div>
-                <div className="p-6 w-2/3 flex flex-col max-h-[calc(100vh-2rem)] overflow-y-auto">
-                  <h2 className="text-gray-800 font-bold text-2xl mb-2">{post.issueTitle}</h2>
-                  <p className="text-gray-600 text-lg mb-1">{post.caption}</p>
-                  <p className="text-gray-500 text-base mb-1">{`Ward: ${post.wardName}`}</p>
-                  <p className="text-gray-500 text-base mb-1">{`Location: ${post.locationInWard}`}</p>
-                  <p className="text-gray-700 text-base mb-4">{post.descriptionOfIssue}</p>
-                  <p className="text-gray-400 text-sm mb-4">
-                    {post.date} at {post.time}
-                  </p>
-                  <div className="mt-auto flex items-center space-x-4">
-                    <Button
-                      onClick={() => handleLike(post.id)}
-                      className="bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-md"
-                    >
-                      Like ({post.likes})
-                    </Button>
-                    <Button
-                      onClick={() => handleCommentInputToggle(post.id)}
-                      className="bg-gray-800 text-white hover:bg-gray-600 px-4 py-2 rounded-md"
-                    >
-                      {showCommentInput === post.id
-                        ? "Hide Comment Box"
-                        : "Add Comment"}
-                    </Button>
-                  </div>
-                  <div className="mt-6">
-                    {post.comments.length > 0 && (
-                      <div className="flex flex-col space-y-3">
-                        {post.comments.slice(0, 2).map((comment, index) => (
-                          <p key={index} className="text-gray-600 text-base">
-                            {comment}
-                          </p>
-                        ))}
-                        {post.comments.length > 2 && !showAllComments[post.id] && (
-                          <p
-                            onClick={() => toggleShowAllComments(post.id)}
-                            className="text-blue-500 cursor-pointer hover:underline"
-                          >
-                            Show More Comments
-                          </p>
-                        )}
-                        {showAllComments[post.id] && post.comments.slice(2).map((comment, index) => (
-                          <p key={index} className="text-gray-600 text-base">
-                            {comment}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  {showCommentInput === post.id && (
-                    <div className="mt-4 flex">
-                      <input
-                        type="text"
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        className="border border-gray-300 p-3 rounded-lg flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Add a comment..."
-                      />
-                      <Button
-                        onClick={() => handleAddComment(post.id)}
-                        className="ml-3 bg-gray-800 text-white hover:bg-gray-600 px-4 py-2 rounded-md"
-                      >
-                        Add
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
+              <p className="mb-2"><strong>Content:</strong> {post.content}</p>
+              <p className="mb-2"><strong>Resolve Count:</strong> {post.resolve_count}</p>
+              <p className="mb-2"><strong>Likes:</strong> {post.like_count}</p>
+              <Button onClick={() => handleAddLike(post.id)}>Like</Button>
+              
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold">Comments:</h3>
+                {post.comments.map((comment) => (
+                  <div key={comment.id} className="mb-2">
+                    <p>{comment.content}</p>
+                    <span className="text-xs text-gray-500">{new Date(comment.created_at).toLocaleString()}</span>
+                  </div>
+                ))}
+                <Textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Add a comment..."
+                  className="w-full mb-2"
+                />
+                <Button onClick={() => handleAddComment(post.id)}>Comment</Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+      <ScrollBar orientation="vertical" />
     </ScrollArea>
   );
 };
