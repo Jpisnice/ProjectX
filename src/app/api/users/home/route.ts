@@ -1,23 +1,31 @@
 import { NextResponse } from "next/server";
 import { doQuery } from "@/lib/db";
 
-export async function GET() {
+// Handle GET request to fetch posts
+export async function GET(request: Request) {
     try {
+        // Assume user_id is sent as a query parameter or derived from session
+        const user_id = 2; // Replace with actual user_id extraction logic
+
         const query = `
-            SELECT p.*, COUNT(DISTINCT l.id) as like_count,
+            SELECT p.*, 
+                   COUNT(DISTINCT l.id) as like_count,
                    json_agg(json_build_object(
                        'id', c.id,
                        'content', c.content,
                        'created_at', c.created_at,
                        'user_id', c.user_id
-                   )) as comments
+                   )) as comments,
+                   EXISTS (
+                       SELECT 1 FROM likes l WHERE l.post_id = p.id AND l.user_id = $1
+                   ) as liked_by_user
             FROM posts p
             LEFT JOIN likes l ON p.id = l.post_id
             LEFT JOIN comments c ON p.id = c.post_id
             GROUP BY p.id
             ORDER BY p.created_at DESC
         `;
-        const posts = await doQuery(query);
+        const posts = await doQuery(query, [user_id]);
         return NextResponse.json(posts);
     } catch (error) {
         console.error('Error fetching posts:', error);
@@ -25,6 +33,7 @@ export async function GET() {
     }
 }
 
+// Handle POST request to add a comment
 export async function POST(request: Request) {
     try {
         const { post_id, user_id, content } = await request.json();
@@ -43,6 +52,7 @@ export async function POST(request: Request) {
     }
 }
 
+// Handle PATCH request to add a like
 export async function PATCH(request: Request) {
     try {
         const { post_id, user_id } = await request.json();
